@@ -1,0 +1,5 @@
+[project]
+name = "mcp-context-bridge"
+
+[project.scripts]
+mcp-server = "mcp_server.__main__:main"
