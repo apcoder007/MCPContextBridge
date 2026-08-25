@@ -42,15 +42,28 @@ def register(mcp: FastMCP) -> None:
         a: float,
         b: float,
     ) -> dict[str, str]:
-        """Perform a basic mathematical calculation.
+        """Perform arithmetic calculations.
 
-        Args:
-            operation: One of add, subtract, multiply, or divide.
-            a: First number.
-            b: Second number.
+            Use this tool whenever the user asks to perform arithmetic
+            or calculate a numerical result.
 
-        Returns:
-            A result object containing the operation and result.
+            This includes natural-language requests such as:
+            - add 7 and 9
+            - what is 7 plus 9
+            - calculate 7 + 9
+            - multiply 7 by 9
+            - subtract 9 from 20
+            - divide 20 by 5
+
+            Do not perform arithmetic yourself when this tool is available.
+
+            Args:
+                operation: One of add, subtract, multiply, or divide.
+                a: First number.
+                b: Second number.
+
+            Returns:
+                The calculated numeric result.
         """
 
         try:
