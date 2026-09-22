@@ -11,7 +11,7 @@ configured. Add these variables to `.env`:
 ```text
 LANGFUSE_PUBLIC_KEY=your-public-key
 LANGFUSE_SECRET_KEY=your-secret-key
-LANGFUSE_HOST=https://cloud.langfuse.com
+LANGFUSE_HOST=https://us.cloud.langfuse.com
 ```
 
 The calculator and GitHub MCP tools are traced individually. GitHub access
