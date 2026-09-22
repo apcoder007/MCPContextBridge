@@ -1,8 +1,15 @@
 import os
+from pathlib import Path
 from typing import Literal
 
 import httpx
+from dotenv import load_dotenv
+from langfuse import observe
 from mcp.server.fastmcp import FastMCP
+
+from mcp_server.observability import update_tool_input
+
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 GitHubOperation = Literal[
     "get_repository",
@@ -21,8 +28,8 @@ def get_github_token() -> str:
     """Get the GitHub Personal Access Token."""
 
     token = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
-
-    if not token:
+    
+    if not token or token.startswith("replace-with-"):
         raise ValueError(
             "GITHUB_PERSONAL_ACCESS_TOKEN environment variable "
             "is not configured"
@@ -233,6 +240,12 @@ def register(mcp: FastMCP) -> None:
     """Register GitHub MCP tools."""
 
     @mcp.tool()
+    @observe(
+        name="github_repository",
+        as_type="tool",
+        capture_input=True,
+        capture_output=True,
+    )
     async def github_repository(
         owner: str,
         repo: str,
@@ -255,6 +268,8 @@ def register(mcp: FastMCP) -> None:
             GitHub repository information.
         """
 
+        update_tool_input({"owner": owner, "repo": repo})
+
         try:
             token = get_github_token()
 
@@ -268,6 +283,12 @@ def register(mcp: FastMCP) -> None:
             raise ValueError(str(exc)) from exc
 
     @mcp.tool()
+    @observe(
+        name="github_issues",
+        as_type="tool",
+        capture_input=True,
+        capture_output=True,
+    )
     async def github_issues(
         owner: str,
         repo: str,
@@ -292,6 +313,12 @@ def register(mcp: FastMCP) -> None:
             List of GitHub issues.
         """
 
+        update_tool_input({
+            "owner": owner,
+            "repo": repo,
+            "state": state,
+        })
+
         try:
             token = get_github_token()
 
@@ -306,6 +333,12 @@ def register(mcp: FastMCP) -> None:
             raise ValueError(str(exc)) from exc
 
     @mcp.tool()
+    @observe(
+        name="github_file",
+        as_type="tool",
+        capture_input=True,
+        capture_output=True,
+    )
     async def github_file(
         owner: str,
         repo: str,
@@ -330,6 +363,12 @@ def register(mcp: FastMCP) -> None:
             GitHub file metadata and content information.
         """
 
+        update_tool_input({
+            "owner": owner,
+            "repo": repo,
+            "path": path,
+        })
+
         try:
             token = get_github_token()
 
@@ -344,6 +383,12 @@ def register(mcp: FastMCP) -> None:
             raise ValueError(str(exc)) from exc
 
     @mcp.tool()
+    @observe(
+        name="github_commits",
+        as_type="tool",
+        capture_input=True,
+        capture_output=True,
+    )
     async def github_commits(
         owner: str,
         repo: str,
@@ -367,6 +412,12 @@ def register(mcp: FastMCP) -> None:
             A list of recent commits.
         """
 
+        update_tool_input({
+            "owner": owner,
+            "repo": repo,
+            "limit": limit,
+        })
+
         try:
             token = get_github_token()
 
@@ -381,6 +432,12 @@ def register(mcp: FastMCP) -> None:
             raise ValueError(str(exc)) from exc
 
     @mcp.tool()
+    @observe(
+        name="github_status",
+        as_type="tool",
+        capture_input=True,
+        capture_output=True,
+    )
     async def github_status(
         owner: str,
         repo: str,
@@ -402,6 +459,8 @@ def register(mcp: FastMCP) -> None:
             Current repository status.
         """
 
+        update_tool_input({"owner": owner, "repo": repo})
+
         try:
             token = get_github_token()
 
@@ -415,6 +474,12 @@ def register(mcp: FastMCP) -> None:
             raise ValueError(str(exc)) from exc
 
     @mcp.tool()
+    @observe(
+        name="github_last_change",
+        as_type="tool",
+        capture_input=True,
+        capture_output=True,
+    )
     async def github_last_change(
         owner: str,
         repo: str,
@@ -435,6 +500,8 @@ def register(mcp: FastMCP) -> None:
         Returns:
             Information about the latest commit.
         """
+
+        update_tool_input({"owner": owner, "repo": repo})
 
         try:
             token = get_github_token()

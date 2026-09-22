@@ -1,7 +1,10 @@
 from decimal import Decimal, InvalidOperation
 from typing import Literal
 
+from langfuse import observe
 from mcp.server.fastmcp import FastMCP
+
+from mcp_server.observability import update_tool_input
 
 Operation = Literal[
     "add",
@@ -37,6 +40,12 @@ def register(mcp: FastMCP) -> None:
     """Register calculator MCP tools."""
 
     @mcp.tool()
+    @observe(
+        name="calculator",
+        as_type="tool",
+        capture_input=True,
+        capture_output=True,
+    )
     async def calculator(
         operation: Operation,
         a: float,
@@ -65,6 +74,12 @@ def register(mcp: FastMCP) -> None:
             Returns:
                 The calculated numeric result.
         """
+
+        update_tool_input({
+            "operation": operation,
+            "a": a,
+            "b": b,
+        })
 
         try:
             left = Decimal(str(a))

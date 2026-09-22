@@ -4,6 +4,7 @@ from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from starlette.routing import Mount
 
+from mcp_server.observability import flush as flush_langfuse
 from mcp_server.tools.generic.calculator import register as register_calculator
 from mcp_server.tools.github.tools import register as register_github
 
@@ -106,7 +107,10 @@ async def lifespan(app: Starlette):
         calculator_mcp.session_manager.run(),
         github_mcp.session_manager.run(),
     ):
+      try:
         yield
+      finally:
+        flush_langfuse()
 
 # ---------------------------------------------------------
 # Mount MCP servers
